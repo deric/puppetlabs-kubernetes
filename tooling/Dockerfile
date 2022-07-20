@@ -27,4 +27,4 @@ RUN set -x && \
 
 WORKDIR /mnt
 
-ENTRYPOINT ["sh", "-c", "/etc/k8s/start-kubetool.sh"]
+ENTRYPOINT ["ruby", "/etc/k8s/kube_tool.rb"]
