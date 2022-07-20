@@ -40,12 +40,13 @@ class Kube_tool
   def self.build_hiera(opts)
     OtherParams.create(opts)
     PreChecks.checks
-    CreateCerts.etcd_ca(opts[:key_size])
-    CreateCerts.etcd_clients(opts[:key_size])
-    CreateCerts.etcd_certificates(opts[:etcd_initial_cluster], opts[:key_size])
-    CreateCerts.kube_ca(opts[:key_size])
-    CreateCerts.kube_front_proxy_ca(opts[:key_size])
-    CreateCerts.sa(opts[:key_size])
+    certs = CreateCerts.new(opts)
+    certs.etcd_ca
+    certs.etcd_clients
+    certs.etcd_certificates
+    certs.kube_ca
+    certs.kube_front_proxy_ca
+    certs.sa
     CleanUp.remove_files
     CleanUp.clean_yaml(opts[:os])
   end
