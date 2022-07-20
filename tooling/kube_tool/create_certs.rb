@@ -2,18 +2,14 @@ require 'fileutils'
 require 'openssl'
 require 'json'
 require 'base64'
+require_relative 'clean_up.rb'
 
 #TODO fix repeatitive code after inital internal release
 
 class CreateCerts
   def CreateCerts.etcd_ca(key_size)
     puts "Creating etcd ca"
-    files = ['ca-conf.json', 'ca-csr.json', 'ca-key.pem', 'ca-key.pem']
-    files.each do |x|
-      if File.exist?(x)
-        FileUtils.rm_f(x)
-      end
-    end
+    CleanUp.all(['ca-conf.json', 'ca-csr.json', 'ca-key.pem', 'ca-key.pem'])
     csr = { "CN": "etcd", "key": {"algo": "rsa", "size": key_size }}
     conf = { "signing": { "default": { "expiry": "43800h" }, "profiles": { "server": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] }, "client": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "client auth" ] }, "peer": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] } } } }
     File.open("ca-csr.json", "w+") { |file| file.write(csr.to_json) }
@@ -83,12 +79,7 @@ class CreateCerts
 
   def CreateCerts.kube_ca(key_size)
     puts "Creating kube ca"
-    files = ['ca-conf.json', 'ca-csr.json', 'ca-key.pem', 'ca-key.pem']
-    files.each do |x|
-      if File.exist?(x)
-        FileUtils.rm_f(x)
-      end
-    end
+    CleanUp.all(['ca-conf.json', 'ca-csr.json', 'ca-key.pem', 'ca-key.pem'])
     csr = { "CN": "kubernetes", "key": {"algo": "rsa", "size": key_size }}
     conf = { "signing": { "default": { "expiry": "43800h" }, "profiles": { "server": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] }, "client": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "client auth" ] }, "peer": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] } } } }
     File.open("ca-csr.json", "w+") { |file| file.write(csr.to_json) }
@@ -109,12 +100,7 @@ class CreateCerts
 
   def CreateCerts.kube_front_proxy_ca(key_size)
     puts "Creating kube front-proxy ca"
-    files = ['front-proxy-ca-conf.json', 'front-proxy-ca-csr.json', 'front-proxy-ca-key.pem', 'front-proxy-ca-key.pem']
-    files.each do |x|
-      if File.exist?(x)
-        FileUtils.rm_f(x)
-      end
-    end
+    CleanUp.all(['front-proxy-ca-conf.json', 'front-proxy-ca-csr.json', 'front-proxy-ca-key.pem', 'front-proxy-ca-key.pem'])
     csr = { "CN": "front-proxy-ca", "key": {"algo": "rsa", "size": key_size }}
     conf = { "signing": { "default": { "expiry": "87600h" }}}
     File.open("front-proxy-ca-csr.json", "w+") { |file| file.write(csr.to_json) }
