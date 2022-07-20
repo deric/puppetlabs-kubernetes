@@ -122,7 +122,7 @@ class CreateCerts
 
   def sa
     puts "Creating service account certs"
-    key = OpenSSL::PKey::RSA.new key_size
+    key = OpenSSL::PKey::RSA.new @opts[:key_size]
     open 'sa-key.pem', 'w' do |io|
       io.write key.to_pem
     end
