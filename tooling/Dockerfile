@@ -19,6 +19,7 @@ RUN set -x && \
 FROM ruby:2.3.5-alpine
 COPY --from=0 /go/src/github.com/cloudflare/cfssl_trust /etc/cfssl
 COPY --from=0 /go/src/github.com/cloudflare/cfssl/bin/ /usr/bin
+RUN gem install slop
 COPY . /etc/k8s
 
 RUN set -x && \
