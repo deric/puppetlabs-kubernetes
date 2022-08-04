@@ -9,6 +9,12 @@ class CleanUp
     end
   end
 
+  def self.remove_yaml
+    puts "Cleaning up *.yaml | *.eyaml files"
+    FileUtils.rm Dir.glob('*.yaml')
+    FileUtils.rm Dir.glob('*.eyaml')
+  end
+
   def self.remove_files
     puts "Cleaning up files"
     FileUtils.rm Dir.glob('*.csr')
@@ -18,12 +24,24 @@ class CleanUp
     FileUtils.rm('discovery_token_hash')
   end
 
-  def self.clean_yaml(os)
-    os = os.capitalize
+  def self.clean_yaml
     puts "Cleaning up yaml"
     File.write("kubernetes.yaml",File.open("kubernetes.yaml",&:read).gsub(/^---$/,""))
-    File.write("kubernetes.yaml",File.open("kubernetes.yaml",&:read).gsub("'",""))
-    FileUtils.mv("kubernetes.yaml","#{os}.yaml")
+    Dir.glob('*.eyaml') do |eyaml|
+      File.write(eyaml,self.fix_multiline_eyaml(eyaml))
+    end
+  end
+
+  def self.fix_multiline_eyaml(filename)
+    lines = ['---']
+    File.foreach(filename) do |line|
+      line.gsub!(/^---$/,'')
+      #line.gsub!(/^---(\s+\{\})?$/,'')
+      # replace |- by >
+      line.gsub!(/(kubernetes::.*:\s+)\|\-/,'\1>')
+      lines << line
+    end
+    lines.join
   end
 
 end

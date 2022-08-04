@@ -20,6 +20,7 @@ class Kube_tool
         o.string '-a', '--api_address', 'The IP address (or fact) that kube api will listen on', default: ENV['KUBE_API_ADVERTISE_ADDRESS']
         o.int '-b', '--key_size', 'Specifies the number of bits in the key to create', default: ENV['KEY_SIZE'].to_i
         o.bool '-d', '--install_dashboard', 'Whether install the kube dashboard', default: ENV['INSTALL_DASHBOARD']
+        o.bool '--eyaml', 'Whether store secrets into separate files prepared for eyaml encryption', default: ENV['EYAML']
         o.on '-h','--help', 'print the help' do
           puts o
           exit
@@ -40,6 +41,7 @@ class Kube_tool
   def self.build_hiera(opts)
     OtherParams.create(opts)
     PreChecks.checks
+    CleanUp.remove_yaml
     certs = CreateCerts.new(opts)
     certs.etcd_ca
     certs.etcd_clients
@@ -48,7 +50,7 @@ class Kube_tool
     certs.kube_front_proxy_ca
     certs.sa
     CleanUp.remove_files
-    CleanUp.clean_yaml(opts[:os])
+    CleanUp.clean_yaml
   end
 end
 
