@@ -22,7 +22,7 @@ nodeRegistration:
     <% else %>
   - effect: NoSchedule
     key: node-role.kubernetes.io/<%= @node_role %>
-    <% end -%>
+    <% end %>
   kubeletExtraArgs:
     <%- if @cloud_provider -%>
     cloud-provider: <%= @cloud_provider %>
