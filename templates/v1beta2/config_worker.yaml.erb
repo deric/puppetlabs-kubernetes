@@ -19,7 +19,7 @@ nodeRegistration:
   criSocket: unix:///run/containerd/containerd.sock
   <%- end -%>
   taints: <% if @node_role.nil? -%>[]
-    <% else -%>
+    <% else %>
   - effect: NoSchedule
     key: node-role.kubernetes.io/<%= @node_role %>
     <% end -%>
