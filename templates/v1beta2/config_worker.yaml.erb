@@ -21,7 +21,7 @@ nodeRegistration:
   taints: <% if @node_role.nil? -%>[]
     <% else %>
   - effect: NoSchedule
-    key: node-role.kubernetes.io/<%= @node_role %>
+    key: node-role.kubernetes.io/<%= @node_role -%>
     <% end %>
   kubeletExtraArgs:
     <%- if @cloud_provider -%>
