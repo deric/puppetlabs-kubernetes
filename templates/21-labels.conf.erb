@@ -1,0 +1,2 @@
+[Service]
+Environment="KUBELET_EXTRA_ARGS=--node-labels=<%= @labels.sort.map{|k,v| "#{k}=#{v}"}.join(',') -%>"
