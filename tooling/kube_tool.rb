@@ -21,6 +21,7 @@ class Kube_tool
         o.int '-b', '--key_size', 'Specifies the number of bits in the key to create', default: ENV['KEY_SIZE'].to_i
         o.bool '-d', '--install_dashboard', 'Whether install the kube dashboard', default: ENV['INSTALL_DASHBOARD']
         o.bool '--eyaml', 'Whether store secrets into separate files prepared for eyaml encryption', default: ENV['EYAML']
+        o.string '-e', '--expiry', 'Certificate expiration', default: ENV['EXPIRY']
         o.on '-h','--help', 'print the help' do
           puts o
           exit

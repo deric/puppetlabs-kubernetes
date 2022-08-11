@@ -16,7 +16,7 @@ RUN set -x && \
   go get -u github.com/cloudflare/cfssl_trust/... && \
   echo "Build complete."
 
-FROM ruby:2.3.5-alpine
+FROM ruby:2.7.6-alpine
 COPY --from=0 /go/src/github.com/cloudflare/cfssl_trust /etc/cfssl
 COPY --from=0 /go/src/github.com/cloudflare/cfssl/bin/ /usr/bin
 RUN gem install slop

@@ -10,6 +10,9 @@ class CreateCerts
     @opts = opts
     @yaml_file = 'kubernetes.yaml'
     @eyaml_file = 'kubernetes.eyaml'
+    exp = @opts['expiry']
+    exp ||=  '5 years'
+    @expiry = expiration(exp)
   end
 
   def write_json(data, filename)
@@ -37,7 +40,7 @@ class CreateCerts
     puts "Creating etcd ca"
     CleanUp.all(['ca-conf.json', 'ca-csr.json', 'ca-key.pem', 'ca-key.pem'])
     csr = { "CN": "etcd", "key": {"algo": "rsa", "size": @opts[:key_size] }}
-    conf = { "signing": { "default": { "expiry": "43800h" }, "profiles": { "server": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] }, "client": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "client auth" ] }, "peer": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] } } } }
+    conf = { "signing": { "default": { "expiry": @expiry }, "profiles": { "server": { "expiry": @expiry, "usages": [ "signing", "key encipherment", "server auth", "client auth" ] }, "client": { "expiry": @expiry, "usages": [ "signing", "key encipherment", "client auth" ] }, "peer": { "expiry": @expiry, "usages": [ "signing", "key encipherment", "server auth", "client auth" ] } } } }
     write_json(csr, 'ca-csr.json')
     write_json(conf, 'ca-conf.json')
     system('cfssl gencert -initca ca-csr.json | cfssljson -bare ca')
@@ -102,7 +105,7 @@ class CreateCerts
     puts "Creating kube ca"
     CleanUp.all(['ca-conf.json', 'ca-csr.json', 'ca-key.pem', 'ca-key.pem'])
     csr = { "CN": "kubernetes", "key": {"algo": "rsa", "size": @opts[:key_size] }}
-    conf = { "signing": { "default": { "expiry": "43800h" }, "profiles": { "server": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] }, "client": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "client auth" ] }, "peer": { "expiry": "43800h", "usages": [ "signing", "key encipherment", "server auth", "client auth" ] } } } }
+    conf = { "signing": { "default": { "expiry": @expiry }, "profiles": { "server": { "expiry": @expiry, "usages": [ "signing", "key encipherment", "server auth", "client auth" ] }, "client": { "expiry": @expiry, "usages": [ "signing", "key encipherment", "client auth" ] }, "peer": { "expiry": @expiry, "usages": [ "signing", "key encipherment", "server auth", "client auth" ] } } } }
     write_json(csr, 'ca-csr.json')
     File.open("ca-conf.json", "w+") { |file| file.write(conf.to_json) }
     system('cfssl gencert -initca ca-csr.json | cfssljson -bare ca')
@@ -151,5 +154,19 @@ class CreateCerts
     store_secret(data, secrets, 'kubernetes::sa_key', 'sa-key.pem')
     append_yaml(data, @yaml_file)
     append_yaml(secrets, @eyaml_file) if @opts[:eyaml]
+  end
+
+  # Convert string e.g. `5y` to expiration in hours
+  def expiration(expiry)
+    pattern = Regexp.new('(\d)\s?([a-zA-Z]+)')
+    unless pattern.match?(expiry)
+      raise "Unknown expiry format '#{expiry}'"
+    else
+      m = expiry.match(pattern)
+      case m[2]
+      when 'y',/year(s?)/
+        return "#{m[1].to_i * 365 * 24}h"
+      end
+    end
   end
 end
