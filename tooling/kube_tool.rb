@@ -40,9 +40,10 @@ class Kube_tool
   end
 
   def self.build_hiera(opts)
-    OtherParams.create(opts)
     PreChecks.checks
+    # remove old files
     CleanUp.remove_yaml
+    OtherParams.create(opts)
     certs = CreateCerts.new(opts)
     certs.etcd_ca
     certs.etcd_clients
