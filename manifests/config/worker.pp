@@ -21,6 +21,7 @@ class kubernetes::config::worker (
   String $cgroup_driver                    = $kubernetes::cgroup_driver,
   Optional[Array] $skip_phases_join        = $kubernetes::skip_phases_join,
   Optional[String] $node_role              = $kubernetes::node_role,
+  Hash[String[1], String] $labels          = $kubernetes::labels,
 ) {
   # to_yaml emits a complete YAML document, so we must remove the leading '---'
   $kubelet_extra_config_yaml = regsubst(to_yaml($kubelet_extra_config), '^---\n', '')

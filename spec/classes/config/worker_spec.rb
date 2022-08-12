@@ -97,4 +97,20 @@ describe 'kubernetes::config::worker', :type => :class do
 
     it { is_expected.to contain_file('/etc/kubernetes/config.yaml').with_content(%r{taints:(\s+)\[\]\n}) }
   end
+
+  context 'worker node with defined labels' do
+    let(:params) do
+        {
+          'kubernetes_version' => '1.24.3',
+          'container_runtime' => 'cri_containerd',
+          'labels' => {
+            'foo' => 'bar',
+            'boo' => 'baz',
+          },
+        }
+    end
+    it { is_expected.to contain_file('/etc/kubernetes/config.yaml') \
+      .with_content(%{node\-labels=boo=baz,foo=bar})
+    }
+  end
 end

@@ -159,21 +159,4 @@ describe 'kubernetes::service', :type => :class do
       .with_content(/KUBELET_EXTRA_ARGS=--node-labels=boo=baz,foo=bar/)
     }
   end
-
-  context 'worker node with defined labels' do
-    let(:params) do
-        {
-            'kubernetes_version' => '1.24.3',
-            'container_runtime' => 'cri_containerd',
-            'controller' => false,
-            'labels' => {
-              'foo' => 'bar',
-              'boo' => 'baz',
-            },
-        }
-    end
-    it { is_expected.to contain_file('/etc/systemd/system/kubelet.service.d/21-labels.conf') \
-      .with_content(/KUBELET_EXTRA_ARGS=--node-labels=boo=baz,foo=bar/)
-    }
-  end
 end

@@ -10,7 +10,6 @@ class kubernetes::service (
   String $kubernetes_version                            = $kubernetes::kubernetes_version,
   Optional[String] $cloud_provider                      = $kubernetes::cloud_provider,
   Optional[String] $cloud_config                        = $kubernetes::cloud_config,
-  Hash[String[1], String] $labels                       = $kubernetes::labels,
 ) {
   file { '/etc/systemd/system/kubelet.service.d':
     ensure => directory,
@@ -118,18 +117,6 @@ class kubernetes::service (
       group   => 'root',
       mode    => '0644',
       content => template('kubernetes/20-cloud.conf.erb'),
-      require => File['/etc/systemd/system/kubelet.service.d'],
-      notify  => Exec['kubernetes-systemd-reload'],
-    }
-  }
-
-  if !empty($labels) {
-    file { '/etc/systemd/system/kubelet.service.d/21-labels.conf':
-      ensure  => file,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => template('kubernetes/21-labels.conf.erb'),
       require => File['/etc/systemd/system/kubelet.service.d'],
       notify  => Exec['kubernetes-systemd-reload'],
     }
