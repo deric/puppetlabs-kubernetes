@@ -142,21 +142,4 @@ describe 'kubernetes::service', :type => :class do
     end
     it { is_expected.to_not contain_file('/etc/systemd/system/kubelet.service.d/20-cloud.conf')}
   end
-
-  context 'controller with defined labels' do
-    let(:params) do
-        {
-            'kubernetes_version' => '1.24.3',
-            'container_runtime' => 'cri_containerd',
-            'controller' => true,
-            'labels' => {
-              'foo' => 'bar',
-              'boo' => 'baz',
-            },
-        }
-    end
-    it { is_expected.to contain_file('/etc/systemd/system/kubelet.service.d/21-labels.conf') \
-      .with_content(/KUBELET_EXTRA_ARGS=--node-labels=boo=baz,foo=bar/)
-    }
-  end
 end

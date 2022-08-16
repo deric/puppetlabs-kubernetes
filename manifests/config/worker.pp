@@ -54,7 +54,7 @@ class kubernetes::config::worker (
     owner     => 'root',
     group     => 'root',
     mode      => '0644',
-    content   => template("${module}/kubelet_default.erb"),
+    content   => template("kubernetes/kubelet_default.erb"),
     show_diff => false,
   }
 }
