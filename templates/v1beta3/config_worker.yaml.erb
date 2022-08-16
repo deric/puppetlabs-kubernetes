@@ -24,14 +24,14 @@ nodeRegistration:
     cloud-config: <%= @cloud_config %>
     <%- end -%>
     <%- end -%>
-    <%- @kubelet_extra_arguments.each do |arg| -%>
+<%- @kubelet_extra_arguments.each do |arg| -%>
     <%= arg %>
-    <%- end -%>
+<%- end -%>
   taints: <% if @node_role.nil? -%><%= "null\n" -%>
-    <% else %>
+<% else %>
   - effect: NoSchedule
     key: node-role.kubernetes.io/<%= @node_role %>
-    <% end -%>
+<% end -%>
 <% if @feature_gates -%>
 featureGates: <%= @feature_gates %>
 <% end -%>
