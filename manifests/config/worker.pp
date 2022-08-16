@@ -47,4 +47,14 @@ class kubernetes::config::worker (
     content   => template("kubernetes/${template}/config_worker.yaml.erb"),
     show_diff => false,
   }
+
+  # sourced in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  file { '/etc/default/kubelet':
+    ensure    => file,
+    owner     => 'root',
+    group     => 'root',
+    mode      => '0644',
+    content   => template("${module}/kubelet_default.erb"),
+    show_diff => false,
+  }
 }

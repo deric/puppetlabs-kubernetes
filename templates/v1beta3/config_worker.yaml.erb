@@ -32,9 +32,6 @@ nodeRegistration:
     <%- @kubelet_extra_arguments.each do |arg| -%>
     <%= arg %>
     <%- end -%>
-    <%- unless @labels.empty? -%>
-    --node-labels=<%= @labels.sort.map{|k,v| "#{k}=#{v}"}.join(',') %>
-    <% end -%>
 <% if @feature_gates -%>
 featureGates: <%= @feature_gates %>
 <% end -%>
