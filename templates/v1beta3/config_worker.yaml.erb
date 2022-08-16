@@ -17,11 +17,6 @@ nodeRegistration:
   <%- if @container_runtime == "cri_containerd" -%>
   criSocket: unix:///run/containerd/containerd.sock
   <%- end -%>
-  taints: <% if @node_role.nil? -%><%= 'null' %>
-    <% else -%>
-  - effect: NoSchedule
-    key: node-role.kubernetes.io/<%= @node_role %>
-    <% end -%>
   kubeletExtraArgs:
     <%- if @cloud_provider -%>
     cloud-provider: <%= @cloud_provider %>
@@ -32,6 +27,11 @@ nodeRegistration:
     <%- @kubelet_extra_arguments.each do |arg| -%>
     <%= arg %>
     <%- end -%>
+  taints: <% if @node_role.nil? -%><%= 'null' %>
+    <% else -%>
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/<%= @node_role %>
+    <% end -%>
 <% if @feature_gates -%>
 featureGates: <%= @feature_gates %>
 <% end -%>
