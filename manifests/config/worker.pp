@@ -21,7 +21,6 @@ class kubernetes::config::worker (
   String $cgroup_driver                    = $kubernetes::cgroup_driver,
   Optional[Array] $skip_phases_join        = $kubernetes::skip_phases_join,
   Optional[String] $node_role              = $kubernetes::node_role,
-  Hash[String[1], String] $labels          = $kubernetes::labels,
 ) {
   # to_yaml emits a complete YAML document, so we must remove the leading '---'
   $kubelet_extra_config_yaml = regsubst(to_yaml($kubelet_extra_config), '^---\n', '')
@@ -45,16 +44,6 @@ class kubernetes::config::worker (
     group     => 'root',
     mode      => '0644',
     content   => template("kubernetes/${template}/config_worker.yaml.erb"),
-    show_diff => false,
-  }
-
-  # sourced in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-  file { '/etc/default/kubelet':
-    ensure    => file,
-    owner     => 'root',
-    group     => 'root',
-    mode      => '0644',
-    content   => template("kubernetes/kubelet_default.erb"),
     show_diff => false,
   }
 }

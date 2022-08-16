@@ -33,13 +33,21 @@ describe 'kubernetes::service', :type => :class do
       }
     end
    it { should contain_file('/etc/systemd/system/kubelet.service.d')}
-   it { should contain_file('/etc/systemd/system/kubelet.service.d/0-containerd.conf')}
    it { should contain_file('/etc/systemd/system/containerd.service')}
    it { is_expected.to_not contain_file('/etc/systemd/system/kubelet.service.d/20-cloud.conf')}
    it { should contain_exec('kubernetes-systemd-reload')}
    it { should contain_service('containerd')}
    it { should contain_service('etcd')}
    it { should contain_service('kubelet')}
+
+
+    it {
+      is_expected.to contain_file('/etc/default/kubelet') \
+        .with_content(%r{KUBELET_EXTRA_ARGS=" --container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock"})
+    }
+
+    it { is_expected.to contain_file('/etc/systemd/system/kubelet.service.d/0-containerd.conf')\
+      .with({'ensure' => 'absent'})}
 
   end
 
@@ -141,5 +149,23 @@ describe 'kubernetes::service', :type => :class do
         }
     end
     it { is_expected.to_not contain_file('/etc/systemd/system/kubelet.service.d/20-cloud.conf')}
+  end
+
+  context 'worker node with defined labels' do
+    let(:params) do
+      {
+        'kubernetes_version' => '1.24.3',
+        'container_runtime' => 'cri_containerd',
+        'labels' => {
+          'foo' => 'bar',
+          'boo' => 'baz',
+        },
+      }
+    end
+
+    it {
+      is_expected.to contain_file('/etc/default/kubelet') \
+        .with_content(%r{^KUBELET_EXTRA_ARGS="--node-labels=boo=baz,foo=bar})
+    }
   end
 end

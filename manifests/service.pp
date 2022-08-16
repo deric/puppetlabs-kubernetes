@@ -10,6 +10,7 @@ class kubernetes::service (
   String $kubernetes_version                            = $kubernetes::kubernetes_version,
   Optional[String] $cloud_provider                      = $kubernetes::cloud_provider,
   Optional[String] $cloud_config                        = $kubernetes::cloud_config,
+  Hash[String[1], String] $labels                       = $kubernetes::labels,
 ) {
   file { '/etc/systemd/system/kubelet.service.d':
     ensure => directory,
@@ -29,6 +30,7 @@ class kubernetes::service (
           enable => true,
         }
       }
+      $kubelet_args = ''
     }
 
     'cri_containerd': {
@@ -36,14 +38,10 @@ class kubernetes::service (
         $containerd_service_require = undef
       } else {
         $containerd_service_require = Exec['kubernetes-systemd-reload']
+        $kubelet_args = '--container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock'
+
         file { '/etc/systemd/system/kubelet.service.d/0-containerd.conf':
-          ensure  => file,
-          owner   => 'root',
-          group   => 'root',
-          mode    => '0644',
-          content => template('kubernetes/0-containerd.conf.erb'),
-          require => File['/etc/systemd/system/kubelet.service.d'],
-          notify  => [Exec['kubernetes-systemd-reload'], Service['containerd']],
+          ensure  => absent,
         }
 
         file { '/etc/systemd/system/containerd.service':
@@ -120,6 +118,16 @@ class kubernetes::service (
       require => File['/etc/systemd/system/kubelet.service.d'],
       notify  => Exec['kubernetes-systemd-reload'],
     }
+  }
+
+  # sourced in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  file { '/etc/default/kubelet':
+    ensure    => file,
+    owner     => 'root',
+    group     => 'root',
+    mode      => '0644',
+    content   => template("kubernetes/kubelet_default.erb"),
+    notify    => Service['kubelet'],
   }
 
   service { 'kubelet':
