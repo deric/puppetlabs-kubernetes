@@ -34,11 +34,18 @@ class CleanUp
 
   def self.fix_multiline_eyaml(filename)
     lines = ['---']
+    cert_block = false
     File.foreach(filename) do |line|
       line.gsub!(/^---$/,'')
       #line.gsub!(/^---(\s+\{\})?$/,'')
       # replace |- by >
       line.gsub!(/(kubernetes::.*:\s+)\|\-/,'\1>')
+      # inside certificate block remove whitespace
+      if cert_block
+        # remove leading whitespace
+        line.lstrip!
+      end
+      cert_block = !cert_block if line =~ /----/
       lines << line
     end
     lines.join
