@@ -30,7 +30,7 @@ nodeRegistration:
     <%- end -%>
     <%- end -%>
     <%- @kubelet_extra_arguments.each do |arg| -%>
-    <%= arg %>
+      <%= arg %>
     <%- end -%>
 <% if @feature_gates -%>
 featureGates: <%= @feature_gates %>
