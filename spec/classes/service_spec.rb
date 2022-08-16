@@ -43,7 +43,7 @@ describe 'kubernetes::service', :type => :class do
 
     it {
       is_expected.to contain_file('/etc/default/kubelet') \
-        .with_content(%r{KUBELET_EXTRA_ARGS=" --container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock"})
+        .with_content(%r{KUBELET_EXTRA_ARGS=" --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock"})
     }
 
     it { is_expected.to contain_file('/etc/systemd/system/kubelet.service.d/0-containerd.conf')\

@@ -17,7 +17,7 @@ nodeRegistration:
   <%- if @container_runtime == "cri_containerd" -%>
   criSocket: unix:///run/containerd/containerd.sock
   <%- end -%>
-  taints: <% if @node_role.nil? -%> []
+  taints: <% if @node_role.nil? -%> null
     <% else -%>
   - effect: NoSchedule
     key: node-role.kubernetes.io/<%= @node_role %>
@@ -30,7 +30,7 @@ nodeRegistration:
     <%- end -%>
     <%- end -%>
     <%- @kubelet_extra_arguments.each do |arg| -%>
-      <%= arg %>
+    <%= arg %>
     <%- end -%>
 <% if @feature_gates -%>
 featureGates: <%= @feature_gates %>
