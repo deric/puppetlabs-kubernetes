@@ -28,7 +28,7 @@ nodeRegistration:
     <%= arg %>
     <%- end -%>
   taints: <% if @node_role.nil? -%><%= "null\n" -%>
-    <% else -%>
+    <% else %>
   - effect: NoSchedule
     key: node-role.kubernetes.io/<%= @node_role %>
     <% end -%>

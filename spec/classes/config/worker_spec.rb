@@ -84,6 +84,7 @@ describe 'kubernetes::config::worker', :type => :class do
     let(:config_yaml) { YAML.safe_load(catalogue.resource('file', '/etc/kubernetes/config.yaml').send(:parameters)[:content]) }
 
     it { is_expected.to contain_file('/etc/kubernetes/config.yaml').with_content(%r{key: node-role.kubernetes.io\/edge\n}) }
+    it { is_expected.to contain_file('/etc/kubernetes/config.yaml').with_content(%r{^(\s+)- effect: NoSchedule}) }
   end
 
   context 'with version => 1.21.1 without node_role defined' do
