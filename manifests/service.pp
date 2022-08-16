@@ -38,7 +38,7 @@ class kubernetes::service (
         $containerd_service_require = undef
       } else {
         $containerd_service_require = Exec['kubernetes-systemd-reload']
-        $kubelet_args = ' --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock'
+        $kubelet_args = '--runtime-request-timeout=15m'
 
         file { '/etc/systemd/system/kubelet.service.d/0-containerd.conf':
           ensure  => absent,
