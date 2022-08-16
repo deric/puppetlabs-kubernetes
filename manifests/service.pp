@@ -11,6 +11,7 @@ class kubernetes::service (
   Optional[String] $cloud_provider                      = $kubernetes::cloud_provider,
   Optional[String] $cloud_config                        = $kubernetes::cloud_config,
   Hash[String[1], String] $labels                       = $kubernetes::labels,
+  Optional[Hash[String[1], String]] $kubelet_args       = $kubernetes::kubelet_args,
 ) {
   file { '/etc/systemd/system/kubelet.service.d':
     ensure => directory,
@@ -30,7 +31,6 @@ class kubernetes::service (
           enable => true,
         }
       }
-      $kubelet_args = ''
     }
 
     'cri_containerd': {
@@ -38,7 +38,6 @@ class kubernetes::service (
         $containerd_service_require = undef
       } else {
         $containerd_service_require = Exec['kubernetes-systemd-reload']
-        $kubelet_args = '--runtime-request-timeout=15m'
 
         file { '/etc/systemd/system/kubelet.service.d/0-containerd.conf':
           ensure  => absent,

@@ -1,4 +1,4 @@
 KUBELET_EXTRA_ARGS="<%- unless @labels.empty? -%>
 --node-labels=<%= @labels.sort.map{|k,v| "#{k}=#{v}"}.join(',') -%>
 <% end -%>
-<%- unless @kubelet_args.empty? -%><%= " #{@kubelet_args}" -%><% end -%>"
+<%- unless @kubelet_args.empty? -%><%= @kubelet_args.sort.map{|k,v| "--#{k}=#{v}"}.join(' ') -%><% end -%>"

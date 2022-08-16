@@ -690,6 +690,7 @@ class kubernetes (
   Hash[String[1], Boolean] $feature_gates                 = {},
   Optional[String] $node_role                             = undef,
   Hash[String[1], String] $labels                         = {},
+  Optional[Hash[String[1], String]] $kubelet_args         = {},
 ) {
   if !$facts['os']['family'] in ['Debian', 'RedHat'] {
     notify { "The OS family ${facts['os']['family']} is not supported by this module": }

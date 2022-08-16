@@ -30,20 +30,21 @@ describe 'kubernetes::service', :type => :class do
         'cloud_config' => '',
         'manage_docker' => true,
         'manage_etcd' => true,
+        'kubelet_args' => {'foo' => 'bar'},
       }
     end
-   it { should contain_file('/etc/systemd/system/kubelet.service.d')}
-   it { should contain_file('/etc/systemd/system/containerd.service')}
-   it { is_expected.to_not contain_file('/etc/systemd/system/kubelet.service.d/20-cloud.conf')}
-   it { should contain_exec('kubernetes-systemd-reload')}
-   it { should contain_service('containerd')}
-   it { should contain_service('etcd')}
-   it { should contain_service('kubelet')}
+    it { should contain_file('/etc/systemd/system/kubelet.service.d')}
+    it { should contain_file('/etc/systemd/system/containerd.service')}
+    it { is_expected.to_not contain_file('/etc/systemd/system/kubelet.service.d/20-cloud.conf')}
+    it { should contain_exec('kubernetes-systemd-reload')}
+    it { should contain_service('containerd')}
+    it { should contain_service('etcd')}
+    it { should contain_service('kubelet')}
 
 
     it {
       is_expected.to contain_file('/etc/default/kubelet') \
-        .with_content(%r{KUBELET_EXTRA_ARGS=" --runtime-request-timeout=15m"})
+        .with_content(%r{KUBELET_EXTRA_ARGS="--foo=bar"})
     }
 
     it { is_expected.to contain_file('/etc/systemd/system/kubelet.service.d/0-containerd.conf')\
