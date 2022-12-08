@@ -575,6 +575,17 @@
 #  no_proxy values.
 #  Defaults to false
 #
+# [*system_reserved*]
+#  Resouces reserved for system processes, that won't be offered by Kublet for allocation
+#  Currently cpu, memory and ephemeral-storage are supported.
+#  See https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/
+#  Defaults to undef
+#
+# [*kube_reserved*]
+#  Resources that can be allocated by kubernetes components
+#  Currently cpu, memory and ephemeral-storage are supported.
+#  Defaults to undef
+#
 # Authors
 # -------
 #
@@ -739,6 +750,8 @@ class kubernetes (
   Integer $wait_for_default_sa_tries                      = 5,
   Integer $wait_for_default_sa_try_sleep                  = 6,
   Hash[String[1], Boolean] $feature_gates                 = {},
+  Kubernetes::Resources $kube_reserved                    = undef,
+  Kubernetes::Resources $system_reserved                  = undef,
 ) {
   if !$facts['os']['family'] in ['Debian', 'RedHat'] {
     notify { "The OS family ${facts['os']['family']} is not supported by this module": }

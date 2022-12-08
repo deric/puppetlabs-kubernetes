@@ -106,4 +106,27 @@ describe 'kubernetes::config::worker', :type => :class do
       expect(config_yaml['nodeRegistration']['taints'][0]['effect']).to include('NoSchedule')
     end
   end
+
+  context 'with system reserved resources' do
+    let(:params) do
+      {
+        kubernetes_version: '1.25.4',
+        system_reserved: {
+          cpu: '1.0',
+          memory: '1Gi',
+          'ephemeral-storage': '10Gi',
+        },
+      }
+    end
+
+    let(:config_yaml) { YAML.safe_load(catalogue.resource('file', '/etc/kubernetes/config.yaml').send(:parameters)[:content]) }
+
+    it { is_expected.to contain_file('/etc/kubernetes/config.yaml').with_content(%r{system-reserved:\n}) }
+
+    it 'includes system reserved resources' do
+      is_expected.to contain_file('/etc/kubernetes/config.yaml').with_content(
+      %r{kubeletExtraArgs:\n    system-reserved:\n      cpu=1.0\n      memory=1Gi\n      ephemeral-storage=10Gi\n},
+    )
+    end
+  end
 end

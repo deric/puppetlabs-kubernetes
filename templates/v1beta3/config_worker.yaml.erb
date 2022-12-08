@@ -37,6 +37,18 @@ nodeRegistration:
     cloud-config: <%= @cloud_config %>
     <%- end -%>
     <%- end -%>
+    <%- if @kube_reserved -%>
+    kube-reserved:
+      <%- @kube_reserved.each do |res,val| -%>
+      <%= res %>=<%= val %>
+      <%- end -%>
+    <%- end -%>
+    <%- if @system_reserved -%>
+    system-reserved:
+      <%- @system_reserved.each do |res,val| -%>
+      <%= res %>=<%= val %>
+      <%- end -%>
+    <%- end -%>
     <%- @kubelet_extra_arguments.each do |arg| -%>
     <%= arg %>
     <%- end %>
