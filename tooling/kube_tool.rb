@@ -17,7 +17,7 @@ class Kube_tool
         o.string '-p', '--cni_provider_version', 'The networking provider version to use, calico and cilium will use this to reference the correct deployment download link', default: ENV['CNI_PROVIDER_VERSION']
         o.string '-t', '--etcd_ip', 'The IP address etcd will listen on', default: ENV['ETCD_IP']
         o.string '-i', '--etcd_initial_cluster', 'The list of servers in the etcd cluster', default: ENV['ETCD_INITIAL_CLUSTER']
-        o.string '-a', '--api_address', 'The IP address (or fact) that kube api will listen on', default: ENV['KUBE_API_ADVERTISE_ADDRESS']
+        o.string '-a', '--kube_api', 'The IP address (or fact) that kube api will listen on', default: ENV['KUBE_API_ADVERTISE_ADDRESS']
         o.int '-b', '--key_size', 'Specifies the number of bits in the key to create', default: ENV['KEY_SIZE'].to_i
         o.int '--ca_algo', 'Algorithm to generate CA certificates, default: ecdsa', default: ENV['CA_ALGO']
         o.int '--sa_size', 'Service account key size', default: ENV['SA_SIZE'].to_i
@@ -29,9 +29,14 @@ class Kube_tool
       end
 
       options = opts.to_hash
-      options[:key_size] = 256 if options[:key_size] < 1
       options[:sa_size] = 2048 if options[:sa_size] < 1
       options[:ca_algo] ||= 'ecdsa'
+      case options[:ca_algo]
+      when 'rsa'
+        options[:key_size] = 2048 if options[:key_size] < 1
+      when 'ecdsa'
+        options[:key_size] = 256 if options[:key_size] < 1
+      end
       options[:container_runtime] ||= 'cri_containerd'
       options[:version] ||= '1.25.4'
       options[:os] ||= 'Debian'
